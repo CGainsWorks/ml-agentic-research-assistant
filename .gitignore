@@ -1,0 +1,41 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Corpus, indexes and run artefacts. All regenerable:
+#   python scripts/fetch_corpus.py && python -m araa.ingestion.pipeline && make eval
+# The corpus is third-party licensed content and is deliberately not vendored.
+data/
+!data/.gitkeep
+
+# Question sets are derived from whatever corpus is currently indexed, so a
+# committed one would go stale the moment the corpus is refetched.
+#   python -m evals.questions.build_question_set
+evals/questions/*.json
+
+# Recorded generations for the fixture backend. Regenerate against a live
+# backend with: python -m evals.record_fixtures
+evals/fixtures/*.jsonl
+
+# docs/results.md IS committed - it is the rendered report the README links to.
+
+# model caches
+.cache/
+models/
+
+# terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.backup
+infra/terraform/.terraform.lock.hcl
+*.tfvars
+!example.tfvars

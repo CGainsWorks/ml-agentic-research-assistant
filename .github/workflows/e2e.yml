@@ -1,0 +1,75 @@
+name: e2e
+
+# End-to-end integration test against the real compose stack.
+#
+# On demand only. It downloads a model and fetches a corpus from arXiv at that
+# service's rate limit, so a run costs tens of minutes of Actions quota. There
+# is no schedule: this repository changes occasionally, so a nightly run would
+# spend that quota every night to re-confirm something nobody changed.
+#
+# Run it when you have touched the compose graph, the Dockerfile, bootstrap.sh,
+# the ingestion pipeline, or anything else a unit test cannot see:
+#
+#     gh workflow run e2e.yml
+#     gh workflow run e2e.yml -f full=true     # also assert citations/streaming
+#
+# Locally the same assertions are `make e2e-cold`, which is faster and free.
+# The per-change gate is ci.yml, which runs on push and PR and is cheap.
+on:
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Run the full suite (asserts citations and streaming) instead of --smoke"
+        type: boolean
+        default: false
+
+concurrency:
+  group: e2e
+  cancel-in-progress: true
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    env:
+      # A GitHub-hosted runner has ~14 GB of disk and no GPU. llama3.1:8b is
+      # 4.9 GB and would run on CPU at roughly a token a second, which is not a
+      # sane CI budget. llama3.2:1b exercises the identical code path.
+      ARAA_OLLAMA_MODEL: llama3.2:1b
+      # arXiv asks for >=3s between requests, so the corpus size is the dominant
+      # cost of this job. Six documents is enough to prove ingestion, licence
+      # filtering, chunking and retrieval all work on real PDFs.
+      ARAA_BOOTSTRAP_DOCS: "6"
+      ANONYMIZED_TELEMETRY: "False"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free up runner disk
+        # The default runner image ships ~30 GB of toolchains this job will
+        # never use, and the image plus model plus corpus does not fit without
+        # reclaiming some of it.
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc || true
+          df -h /
+
+      - name: Bring up the stack and run the integration test
+        run: |
+          if [ "${{ github.event.inputs.full }}" = "true" ]; then
+            ./scripts/e2e_test.sh --up --fresh --keep
+          else
+            ./scripts/e2e_test.sh --up --fresh --keep --smoke
+          fi
+
+      - name: Compose logs (on failure)
+        if: failure()
+        run: |
+          echo "=== bootstrap ==="; docker compose logs bootstrap --tail 100 || true
+          echo "=== api ===";       docker compose logs api --tail 100 || true
+          echo "=== ollama ===";    docker compose logs ollama --tail 50 || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v --remove-orphans || true

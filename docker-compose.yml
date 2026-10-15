@@ -1,0 +1,116 @@
+# One command, clean machine, no API key:
+#
+#     docker compose up
+#
+# Brings up: a local Ollama, a one-shot bootstrap that fetches the CC-BY corpus
+# and builds the index, then the streaming API on http://localhost:8000.
+#
+# First run downloads a ~4.7GB model and ~60 papers, so it takes a while. Every
+# subsequent run is instant because both are on named volumes.
+
+name: araa
+
+services:
+  ollama:
+    image: ollama/ollama:0.5.4
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+    # Uncomment to use an NVIDIA GPU (needs nvidia-container-toolkit on the host).
+    # Everything works on CPU without this, just slower.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  bootstrap:
+    build: .
+    environment:
+      ARAA_OLLAMA_BASE_URL: http://ollama:11434
+      ARAA_DATA_DIR: /data
+      ARAA_CORPUS_DIR: /data/corpus
+      ARAA_CHROMA_DIR: /data/chroma
+      ARAA_INDEX_DIR: /data/index
+      ARAA_RUNS_DIR: /data/runs
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - araa-data:/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+    # Idempotent: skips the fetch and the ingest if the index already exists.
+    command: ["bash", "/app/scripts/bootstrap.sh"]
+    restart: "no"
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ARAA_OLLAMA_BASE_URL: http://ollama:11434
+      # Used only when ARAA_LLM_BACKEND=openai_compat. Defaults to the bundled
+      # Ollama's OpenAI-compatible route; set ARAA_OPENAI_BASE_URL in .env (or
+      # the shell) to use vLLM, a hosted endpoint or anything else. Bootstrap
+      # pulls a model only for the ollama backend, so against the bundled
+      # Ollama the model must already be on the ollama-models volume.
+      ARAA_OPENAI_BASE_URL: ${ARAA_OPENAI_BASE_URL:-http://ollama:11434/v1}
+      ARAA_DATA_DIR: /data
+      ARAA_CORPUS_DIR: /data/corpus
+      ARAA_CHROMA_DIR: /data/chroma
+      ARAA_INDEX_DIR: /data/index
+      ARAA_RUNS_DIR: /data/runs
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - araa-data:/data
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  # Scheduled re-ingestion / re-embedding. Off by default so `docker compose up`
+  # does not silently start a background job. Enable with:
+  #     docker compose --profile scheduler up
+  scheduler:
+    build: .
+    profiles: ["scheduler"]
+    environment:
+      ARAA_OLLAMA_BASE_URL: http://ollama:11434
+      ARAA_DATA_DIR: /data
+      ARAA_CORPUS_DIR: /data/corpus
+      ARAA_CHROMA_DIR: /data/chroma
+      ARAA_INDEX_DIR: /data/index
+      ARAA_RUNS_DIR: /data/runs
+      ARAA_INGEST_ENABLED: "true"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - araa-data:/data
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    command: ["python", "-m", "araa.ingestion.schedule"]
+    restart: unless-stopped
+
+volumes:
+  araa-data:
+  ollama-models:

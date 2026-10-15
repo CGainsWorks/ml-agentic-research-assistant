@@ -1,0 +1,19 @@
+* text=auto eol=lf
+
+*.py   text diff=python
+*.md   text
+*.yml  text
+*.yaml text
+*.tf   text
+*.json text
+
+# Binary / large artefacts. Nothing here is committed today — these rules exist so
+# that if weights or media are ever added they go to LFS rather than git history.
+*.pdf      filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.bin      filter=lfs diff=lfs merge=lfs -text
+*.onnx     filter=lfs diff=lfs merge=lfs -text
+*.png      filter=lfs diff=lfs merge=lfs -text
+*.gif      filter=lfs diff=lfs merge=lfs -text
+*.mp4      filter=lfs diff=lfs merge=lfs -text
+*.parquet  filter=lfs diff=lfs merge=lfs -text
