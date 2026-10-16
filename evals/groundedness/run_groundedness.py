@@ -234,6 +234,24 @@ async def evaluate_mode(
     }
 
 
+SELF_JUDGING_PREFIX = "WARNING: the judge ("
+
+
+def self_judging_warning(model: str) -> str:
+    """The note recorded when the judge and the author are the same model.
+
+    Shared with `evals.report`, which re-renders this note from older
+    artefacts so the advice always names a flag that exists.
+    """
+    return (
+        f"{SELF_JUDGING_PREFIX}{model}) is the same model that wrote the answers. A model "
+        "grading its own output is a sympathetic judge and these numbers are optimistic. "
+        "Re-run with --judge-backend openai_compat pointed at a different model for an "
+        "independent grade. The lexical judge is model-independent and is reported "
+        "alongside as a sanity floor."
+    )
+
+
 async def _amain() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--limit", type=int, default=20, help="questions to evaluate")
@@ -292,14 +310,7 @@ async def _amain() -> int:
     for r in results.values():
         notes.extend(r.get("warnings", []))
     if self_judging:
-        notes.append(
-            f"WARNING: the judge ({judge_settings.active_model_name}) is the same model "
-            "that wrote the answers. A model grading its own output is a sympathetic "
-            "judge and these numbers are optimistic. Re-run with --judge-backend "
-            "openai_compat pointed at a different model for an independent grade. The "
-            "lexical judge is model-independent and is reported alongside as a sanity "
-            "floor."
-        )
+        notes.append(self_judging_warning(judge_settings.active_model_name))
 
     artefact = EvalArtefact(
         name="groundedness",

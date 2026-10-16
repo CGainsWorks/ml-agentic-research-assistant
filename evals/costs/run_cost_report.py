@@ -43,6 +43,12 @@ from evals.harness import (
 # tier rather than by vendor model ID.
 PROJECTION_MODELS = ["hosted-llm-small", "hosted-llm-large"]
 
+TIER_LABEL_NOTE = (
+    "Projection price points are labelled by tier (hosted-llm-small, "
+    "hosted-llm-large) and shown with their USD per million token rates. Model "
+    "identifiers are withheld."
+)
+
 
 def _project(input_tokens: float, output_tokens: float) -> dict[str, float]:
     """Price measured token counts against hosted rates.
@@ -189,9 +195,7 @@ async def _amain() -> int:
             "projected_cost_usd_* prices the *measured* token counts at hosted rates. "
             "It is a planning figure, not a measurement: a different model would "
             "tokenise and generate differently.",
-            "Projection price points are labelled by tier (hosted-llm-small, "
-            "hosted-llm-large) and shown with their USD per million token rates. Model "
-            "identifiers are withheld.",
+            TIER_LABEL_NOTE,
             "Wall time is dominated by hardware. On the dev box used here the GPU was "
             "occupied, so Ollama ran on CPU. Treat latency as a shape, not a benchmark.",
         ],

@@ -1,0 +1,736 @@
+{
+  "schema_version": 1,
+  "runs_finished_at": "2026-08-09T20:36:04.944028+00:00",
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41"
+  },
+  "corpus": {
+    "present": true,
+    "documents": 12,
+    "licence_counts": {
+      "CC BY 4.0": 10,
+      "CC BY-SA 4.0": 2
+    },
+    "fetch_params": {
+      "set": "cs",
+      "from": "2024-04-17",
+      "until": "2024-06-01",
+      "limit": 12,
+      "accepted_licences": [
+        "http://creativecommons.org/licenses/by/4.0",
+        "http://creativecommons.org/licenses/by/3.0",
+        "http://creativecommons.org/licenses/by-sa/4.0",
+        "http://creativecommons.org/licenses/by-sa/3.0",
+        "http://creativecommons.org/publicdomain/zero/1.0"
+      ]
+    }
+  },
+  "index": {
+    "present": true,
+    "chunks": 2213,
+    "documents_ingested": 12,
+    "chunk_chars_mean": 292.8,
+    "config": {
+      "chunk_strategy": "recursive",
+      "chunk_size": 900,
+      "chunk_overlap": 150,
+      "sentence_window_size": 3,
+      "embedding_model": "BAAI/bge-small-en-v1.5",
+      "reranker_model": "BAAI/bge-reranker-base",
+      "vector_top_k": 30,
+      "bm25_top_k": 30,
+      "rrf_k": 60,
+      "fused_top_k": 20,
+      "final_top_k": 6,
+      "use_reranker": true
+    }
+  },
+  "transformations": [
+    "costs: projection price points keyed by a model identifier were relabelled by tier, matched on identical USD per Mtok rates; no number changed",
+    "groundedness: the self-judging warning was re-rendered with the current --judge-backend advice"
+  ],
+  "sections": {
+    "retrieval": {
+      "metrics": {
+        "retrieval_queries": {
+          "questions": 36,
+          "lift": {
+            "metric": "doc_hit@3",
+            "rerank_vs_vector_only": {
+              "before": 0.9167,
+              "after": 0.9722,
+              "absolute": 0.0555,
+              "relative": 0.0605,
+              "n": 36,
+              "before_ci95": [
+                0.7817,
+                0.9713
+              ],
+              "after_ci95": [
+                0.8583,
+                0.9951
+              ],
+              "intervals_overlap": true
+            },
+            "rerank_vs_hybrid": {
+              "before": 0.9444,
+              "after": 0.9722,
+              "absolute": 0.0278,
+              "relative": 0.0294,
+              "n": 36,
+              "before_ci95": [
+                0.8186,
+                0.9846
+              ],
+              "after_ci95": [
+                0.8583,
+                0.9951
+              ],
+              "intervals_overlap": true
+            },
+            "hybrid_vs_vector_only": {
+              "before": 0.9167,
+              "after": 0.9444,
+              "absolute": 0.0277,
+              "relative": 0.0302,
+              "n": 36,
+              "before_ci95": [
+                0.7817,
+                0.9713
+              ],
+              "after_ci95": [
+                0.8186,
+                0.9846
+              ],
+              "intervals_overlap": true
+            },
+            "rerank_latency_cost_ms": 6252.4
+          },
+          "configs": {
+            "vector_only": {
+              "metrics": {
+                "chunk_mrr": 0.6023,
+                "doc_mrr": 0.6236,
+                "chunk_hit@1": 0.3056,
+                "chunk_recall@1": 0.0029,
+                "chunk_ndcg@1": 0.3056,
+                "doc_hit@1": 0.3056,
+                "chunk_hit@3": 0.8889,
+                "chunk_recall@3": 0.0151,
+                "chunk_ndcg@3": 0.5267,
+                "doc_hit@3": 0.9167,
+                "chunk_hit@5": 0.9167,
+                "chunk_recall@5": 0.0393,
+                "chunk_ndcg@5": 0.6077,
+                "doc_hit@5": 0.9722,
+                "chunk_hit@10": 0.9722,
+                "chunk_recall@10": 0.084,
+                "chunk_ndcg@10": 0.6793,
+                "doc_hit@10": 0.9722,
+                "questions": 36,
+                "latency_ms_mean": 621.4,
+                "latency_ms_p95": 1013.5
+              }
+            },
+            "bm25_only": {
+              "metrics": {
+                "chunk_mrr": 0.4815,
+                "doc_mrr": 0.5139,
+                "chunk_hit@1": 0.1111,
+                "chunk_recall@1": 0.0012,
+                "chunk_ndcg@1": 0.1111,
+                "doc_hit@1": 0.1111,
+                "chunk_hit@3": 0.9167,
+                "chunk_recall@3": 0.0129,
+                "chunk_ndcg@3": 0.406,
+                "doc_hit@3": 0.9167,
+                "chunk_hit@5": 0.9167,
+                "chunk_recall@5": 0.0269,
+                "chunk_ndcg@5": 0.5236,
+                "doc_hit@5": 0.9167,
+                "chunk_hit@10": 0.9167,
+                "chunk_recall@10": 0.0629,
+                "chunk_ndcg@10": 0.6304,
+                "doc_hit@10": 0.9167,
+                "questions": 36,
+                "latency_ms_mean": 17.6,
+                "latency_ms_p95": 25.4
+              }
+            },
+            "hybrid": {
+              "metrics": {
+                "chunk_mrr": 0.5319,
+                "doc_mrr": 0.5648,
+                "chunk_hit@1": 0.1667,
+                "chunk_recall@1": 0.0017,
+                "chunk_ndcg@1": 0.1667,
+                "doc_hit@1": 0.1667,
+                "chunk_hit@3": 0.9167,
+                "chunk_recall@3": 0.0143,
+                "chunk_ndcg@3": 0.4745,
+                "doc_hit@3": 0.9444,
+                "chunk_hit@5": 1.0,
+                "chunk_recall@5": 0.0452,
+                "chunk_ndcg@5": 0.5773,
+                "doc_hit@5": 1.0,
+                "chunk_hit@10": 1.0,
+                "chunk_recall@10": 0.0805,
+                "chunk_ndcg@10": 0.6677,
+                "doc_hit@10": 1.0,
+                "questions": 36,
+                "latency_ms_mean": 482.6,
+                "latency_ms_p95": 920.3
+              }
+            },
+            "hybrid_reranked": {
+              "metrics": {
+                "chunk_mrr": 0.4338,
+                "doc_mrr": 0.4884,
+                "chunk_hit@1": 0.0,
+                "chunk_recall@1": 0.0,
+                "chunk_ndcg@1": 0.0,
+                "doc_hit@1": 0.0,
+                "chunk_hit@3": 0.9444,
+                "chunk_recall@3": 0.0183,
+                "chunk_ndcg@3": 0.3977,
+                "doc_hit@3": 0.9722,
+                "chunk_hit@5": 1.0,
+                "chunk_recall@5": 0.0452,
+                "chunk_ndcg@5": 0.5412,
+                "doc_hit@5": 1.0,
+                "chunk_hit@10": 1.0,
+                "chunk_recall@10": 0.08,
+                "chunk_ndcg@10": 0.6392,
+                "doc_hit@10": 1.0,
+                "questions": 36,
+                "latency_ms_mean": 6735.0,
+                "latency_ms_p95": 12985.3
+              }
+            }
+          }
+        }
+      },
+      "notes": [
+        "Lift is reported on the headline metric appropriate to each question set's gold granularity: doc_hit@3 for the deterministic set (gold is document-level), chunk_ndcg@10 for the generated set (gold is a single chunk). Every other metric is recorded per configuration regardless.",
+        "The query's own abstract chunks are removed from the retrieved list before scoring on the deterministic set, since the query is lifted from that abstract.",
+        "Reranker latency is measured on CPU inside a container. A GPU moves this by roughly an order of magnitude; the quality numbers do not change."
+      ],
+      "provenance": {
+        "artefact": "data/runs/eval-retrieval.json",
+        "sha256": "ce9cf621c64dcbb656e3fd61286607d4c5c48edb33a132cbea3d01c79542a0e1",
+        "finished_at": "2026-08-05T15:36:52.754205+00:00",
+        "harness_version": "1",
+        "config": {
+          "top_k": 10,
+          "headline_metrics": {
+            "retrieval_queries": "doc_hit@3",
+            "research_questions": "chunk_ndcg@10"
+          },
+          "chunk_strategy": "recursive",
+          "chunk_size": 900,
+          "chunk_overlap": 150,
+          "sentence_window_size": 3,
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "reranker_model": "BAAI/bge-reranker-base",
+          "vector_top_k": 30,
+          "bm25_top_k": 30,
+          "rrf_k": 60,
+          "fused_top_k": 20,
+          "final_top_k": 6,
+          "use_reranker": true
+        }
+      }
+    },
+    "chunking": {
+      "metrics": {
+        "by_strategy": {
+          "fixed": {
+            "retrieval": {
+              "chunk_hit@5": 1.0,
+              "chunk_hit@10": 1.0,
+              "chunk_ndcg@10": 0.6888,
+              "chunk_mrr": 0.4611,
+              "doc_hit@3": 0.9167,
+              "questions": 12,
+              "latency_ms_mean": 5735.5,
+              "latency_ms_p95": 6571.0,
+              "context_chars_mean": 3518.0,
+              "context_tokens_approx": 879.0
+            },
+            "index": {
+              "chunks": 2176,
+              "chunk_chars_mean": 280.7,
+              "chunk_chars_p95": 900,
+              "documents": 12,
+              "ingest_seconds": 129.7
+            },
+            "params": {
+              "chunk_size": 900,
+              "chunk_overlap": 0,
+              "sentence_window_size": 3
+            }
+          },
+          "recursive": {
+            "retrieval": {
+              "chunk_hit@5": 1.0,
+              "chunk_hit@10": 1.0,
+              "chunk_ndcg@10": 0.6386,
+              "chunk_mrr": 0.4472,
+              "doc_hit@3": 0.9167,
+              "questions": 12,
+              "latency_ms_mean": 5583.5,
+              "latency_ms_p95": 6562.9,
+              "context_chars_mean": 3436.0,
+              "context_tokens_approx": 859.0
+            },
+            "index": {
+              "chunks": 2213,
+              "chunk_chars_mean": 292.8,
+              "chunk_chars_p95": 882,
+              "documents": 12,
+              "ingest_seconds": 135.7
+            },
+            "params": {
+              "chunk_size": 900,
+              "chunk_overlap": 150,
+              "sentence_window_size": 3
+            }
+          },
+          "sentence_window": {
+            "retrieval": {
+              "chunk_hit@5": 0.5,
+              "chunk_hit@10": 0.9167,
+              "chunk_ndcg@10": 0.3485,
+              "chunk_mrr": 0.169,
+              "doc_hit@3": 0.9167,
+              "questions": 12,
+              "latency_ms_mean": 6860.9,
+              "latency_ms_p95": 7796.7,
+              "context_chars_mean": 5276.0,
+              "context_tokens_approx": 1319.0
+            },
+            "index": {
+              "chunks": 5020,
+              "chunk_chars_mean": 485.6,
+              "chunk_chars_p95": 1172,
+              "documents": 12,
+              "ingest_seconds": 147.6
+            },
+            "params": {
+              "chunk_size": 900,
+              "chunk_overlap": 150,
+              "sentence_window_size": 3
+            }
+          },
+          "section_aware": {
+            "retrieval": {
+              "chunk_hit@5": 0.9167,
+              "chunk_hit@10": 1.0,
+              "chunk_ndcg@10": 0.6891,
+              "chunk_mrr": 0.4425,
+              "doc_hit@3": 0.9167,
+              "questions": 12,
+              "latency_ms_mean": 8162.6,
+              "latency_ms_p95": 9827.7,
+              "context_chars_mean": 6573.0,
+              "context_tokens_approx": 1643.0
+            },
+            "index": {
+              "chunks": 708,
+              "chunk_chars_mean": 929.0,
+              "chunk_chars_p95": 1476,
+              "documents": 12,
+              "ingest_seconds": 126.8
+            },
+            "params": {
+              "chunk_size": 1400,
+              "chunk_overlap": 100,
+              "sentence_window_size": 3
+            }
+          }
+        },
+        "best_ndcg@10": "section_aware",
+        "lowest_context_cost": "recursive"
+      },
+      "notes": [
+        "Each strategy was indexed into its own isolated Chroma collection.",
+        "Queries are identical across strategies (abstract sentences); gold chunk sets are per-strategy because chunk ids differ by construction.",
+        "context_tokens_approx is chars/4, not a tokenizer count. The cost report uses the provider's own token counts."
+      ],
+      "provenance": {
+        "artefact": "data/runs/eval-chunking.json",
+        "sha256": "2b438a442100dd9b88dae65495d708739a98b0d3a5e1453f5d6b85259ec361a1",
+        "finished_at": "2026-08-09T20:18:51.741698+00:00",
+        "harness_version": "1",
+        "config": {
+          "top_k": 10,
+          "per_doc": 1,
+          "grid": {
+            "fixed": {
+              "chunk_size": 900,
+              "chunk_overlap": 0
+            },
+            "recursive": {
+              "chunk_size": 900,
+              "chunk_overlap": 150
+            },
+            "sentence_window": {
+              "sentence_window_size": 3
+            },
+            "section_aware": {
+              "chunk_size": 1400,
+              "chunk_overlap": 100
+            }
+          }
+        }
+      }
+    },
+    "groundedness": {
+      "metrics": {
+        "by_mode": {
+          "single_shot": {
+            "citation_rate": {
+              "rate": 0.6905,
+              "n": 42,
+              "successes": 29,
+              "ci95": [
+                0.5397,
+                0.8093
+              ]
+            },
+            "citation_support_rate": {
+              "rate": 0.6207,
+              "n": 29,
+              "successes": 18,
+              "ci95": [
+                0.44,
+                0.7731
+              ]
+            },
+            "citation_support_rate_lexical": {
+              "rate": 0.6552,
+              "n": 29,
+              "successes": 19,
+              "ci95": [
+                0.4734,
+                0.8006
+              ]
+            },
+            "hallucination_rate": {
+              "rate": 0.5714,
+              "n": 42,
+              "successes": 24,
+              "ci95": [
+                0.4221,
+                0.7088
+              ]
+            },
+            "fabricated_citation_rate": {
+              "rate": 0.0,
+              "n": 10,
+              "successes": 0,
+              "ci95": [
+                0.0,
+                0.2775
+              ]
+            },
+            "judge_agreement": {
+              "rate": 0.5517,
+              "n": 29,
+              "successes": 16,
+              "ci95": [
+                0.3755,
+                0.7159
+              ]
+            },
+            "judge_errors": 0,
+            "unjudgeable_claims": 0,
+            "measured": true,
+            "questions": 10,
+            "answers_produced": 10,
+            "mean_cost_usd": 0.0,
+            "mean_total_tokens": 1572.6,
+            "mean_latency_s": 8.4
+          },
+          "agent": {
+            "citation_rate": {
+              "rate": 0.7429,
+              "n": 35,
+              "successes": 26,
+              "ci95": [
+                0.5793,
+                0.8584
+              ]
+            },
+            "citation_support_rate": {
+              "rate": 0.2692,
+              "n": 26,
+              "successes": 7,
+              "ci95": [
+                0.137,
+                0.4608
+              ]
+            },
+            "citation_support_rate_lexical": {
+              "rate": 0.5,
+              "n": 26,
+              "successes": 13,
+              "ci95": [
+                0.3206,
+                0.6794
+              ]
+            },
+            "hallucination_rate": {
+              "rate": 0.8,
+              "n": 35,
+              "successes": 28,
+              "ci95": [
+                0.6411,
+                0.8996
+              ]
+            },
+            "fabricated_citation_rate": {
+              "rate": 0.0,
+              "n": 10,
+              "successes": 0,
+              "ci95": [
+                0.0,
+                0.2775
+              ]
+            },
+            "judge_agreement": {
+              "rate": 0.6923,
+              "n": 26,
+              "successes": 18,
+              "ci95": [
+                0.5001,
+                0.835
+              ]
+            },
+            "judge_errors": 0,
+            "unjudgeable_claims": 0,
+            "measured": true,
+            "questions": 10,
+            "answers_produced": 10,
+            "mean_cost_usd": 0.0,
+            "mean_total_tokens": 13258.9,
+            "mean_latency_s": 48.25
+          }
+        },
+        "judge": {
+          "llm_judge": "llm:llama3.1:8b",
+          "lexical_judge": "lexical_overlap",
+          "self_judging": true
+        }
+      },
+      "notes": [
+        "citation_support_rate counts only SUPPORTED. A PARTIAL verdict - the passage is on topic but the claim overstates it - is counted as unsupported, because a reader following that citation would be misled.",
+        "hallucination_rate = (uncited factual claims + cited-but-unsupported claims) / all factual claims.",
+        "Non-factual sentences (hedges, transitions, headings, refusals) are excluded from the denominator; see rag/citations.py:is_factual.",
+        "A mode with measured=false was NOT measured: its judged denominator was empty. Its support and hallucination rates are absent, not zero.",
+        "WARNING: the judge (llama3.1:8b) is the same model that wrote the answers. A model grading its own output is a sympathetic judge and these numbers are optimistic. Re-run with --judge-backend openai_compat pointed at a different model for an independent grade. The lexical judge is model-independent and is reported alongside as a sanity floor."
+      ],
+      "provenance": {
+        "artefact": "data/runs/eval-groundedness.json",
+        "sha256": "e1795dcf70d100d18f7b4c4beb5761042aea270532d3fdc59327b1f5db5ad7c1",
+        "finished_at": "2026-08-09T20:29:31.518337+00:00",
+        "harness_version": "1",
+        "config": {
+          "question_set": "research_questions",
+          "limit": 10,
+          "llm_backend": "ollama",
+          "model": "llama3.1:8b",
+          "temperature": 0.0,
+          "max_output_tokens": 900,
+          "chunk_strategy": "recursive",
+          "chunk_size": 900,
+          "chunk_overlap": 150,
+          "sentence_window_size": 3,
+          "embedding_model": "BAAI/bge-small-en-v1.5",
+          "reranker_model": "BAAI/bge-reranker-base",
+          "vector_top_k": 30,
+          "bm25_top_k": 30,
+          "rrf_k": 60,
+          "fused_top_k": 20,
+          "final_top_k": 6,
+          "use_reranker": true
+        }
+      }
+    },
+    "adversarial": {
+      "metrics": {
+        "detector": {
+          "detection_rate": {
+            "rate": 1.0,
+            "n": 21,
+            "successes": 21,
+            "ci95": [
+              0.8454,
+              1.0
+            ]
+          },
+          "block_rate_on_must_block": {
+            "rate": 1.0,
+            "n": 11,
+            "successes": 11,
+            "ci95": [
+              0.7412,
+              1.0
+            ]
+          },
+          "false_positive_rate": {
+            "rate": 0.0,
+            "n": 6,
+            "successes": 0,
+            "ci95": [
+              0.0,
+              0.3903
+            ]
+          },
+          "obfuscated_attacks_caught": 4
+        }
+      },
+      "notes": [
+        "Tier 1 scans each payload in isolation and needs no model, so it runs in CI.",
+        "Tier 2 splices each payload into the middle of a real retrieved passage and runs the full pipeline. Success is measured as model COMPLIANCE, not as failure to block: resisting an instruction while still answering the user is the better outcome and is scored as a pass.",
+        "The benign controls matter as much as the attacks. This corpus contains papers about prompt injection; a detector that blocks those has made the corpus unusable, and false_positive_rate is where that shows up."
+      ],
+      "provenance": {
+        "artefact": "data/runs/eval-adversarial.json",
+        "sha256": "b9d84263223f93dd1b3c63b9dc5baba8c6b87549ddbc0b28b12d1080945b2c32",
+        "finished_at": "2026-08-09T20:36:04.944028+00:00",
+        "harness_version": "1",
+        "config": {
+          "suite": "attacks.yaml",
+          "tier2_limit": 8,
+          "llm_backend": "ollama",
+          "model": "llama3.1:8b",
+          "temperature": 0.0,
+          "max_output_tokens": 900
+        }
+      }
+    },
+    "costs": {
+      "metrics": {
+        "by_mode": {
+          "single_shot": {
+            "queries": 5,
+            "mean_llm_calls": 1.0,
+            "mean_input_tokens": 1417.0,
+            "mean_output_tokens": 126.4,
+            "mean_total_tokens": 1543.4,
+            "p95_total_tokens": 1866.0,
+            "mean_cost_usd_actual": 0.0,
+            "mean_wall_s": 9.38,
+            "p95_wall_s": 15.84,
+            "projected_cost_usd_per_query": {
+              "hosted-llm-small": 0.002049,
+              "hosted-llm-large": 0.006147
+            },
+            "projected_cost_usd_per_1000_queries": {
+              "hosted-llm-small": 2.05,
+              "hosted-llm-large": 6.15
+            },
+            "tokens_by_node": {
+              "answer": {
+                "calls": 5,
+                "input_tokens": 7085,
+                "output_tokens": 632,
+                "mean_tokens_per_query": 1543.4,
+                "share_of_tokens": 1.0
+              }
+            }
+          },
+          "agent": {
+            "queries": 5,
+            "mean_llm_calls": 8.0,
+            "mean_input_tokens": 11837.2,
+            "mean_output_tokens": 1168.4,
+            "mean_total_tokens": 13005.6,
+            "p95_total_tokens": 15801.0,
+            "mean_cost_usd_actual": 0.0,
+            "mean_wall_s": 51.07,
+            "p95_wall_s": 69.41,
+            "projected_cost_usd_per_query": {
+              "hosted-llm-small": 0.017679,
+              "hosted-llm-large": 0.053038
+            },
+            "projected_cost_usd_per_1000_queries": {
+              "hosted-llm-small": 17.68,
+              "hosted-llm-large": 53.04
+            },
+            "tokens_by_node": {
+              "critique": {
+                "calls": 15,
+                "input_tokens": 25715,
+                "output_tokens": 2783,
+                "mean_tokens_per_query": 5699.6,
+                "share_of_tokens": 0.4382
+              },
+              "draft": {
+                "calls": 5,
+                "input_tokens": 7499,
+                "output_tokens": 691,
+                "mean_tokens_per_query": 1638.0,
+                "share_of_tokens": 0.1259
+              },
+              "plan": {
+                "calls": 5,
+                "input_tokens": 2897,
+                "output_tokens": 109,
+                "mean_tokens_per_query": 601.2,
+                "share_of_tokens": 0.0462
+              },
+              "revise": {
+                "calls": 10,
+                "input_tokens": 19374,
+                "output_tokens": 1894,
+                "mean_tokens_per_query": 4253.6,
+                "share_of_tokens": 0.3271
+              },
+              "tools": {
+                "calls": 5,
+                "input_tokens": 3701,
+                "output_tokens": 365,
+                "mean_tokens_per_query": 813.2,
+                "share_of_tokens": 0.0625
+              }
+            }
+          }
+        },
+        "agent_token_multiple_vs_single_shot": 8.43,
+        "pricing_used_for_projection": {
+          "hosted-llm-small": [
+            1.0,
+            5.0
+          ],
+          "hosted-llm-large": [
+            3.0,
+            15.0
+          ]
+        }
+      },
+      "notes": [
+        "Token counts are reported by the provider, not estimated from characters.",
+        "mean_cost_usd_actual is 0.00 on a local model by construction: local inference has no marginal API cost. The electricity is real and is not measured here.",
+        "projected_cost_usd_* prices the *measured* token counts at hosted rates. It is a planning figure, not a measurement: a different model would tokenise and generate differently.",
+        "Wall time is dominated by hardware. On the dev box used here the GPU was occupied, so Ollama ran on CPU. Treat latency as a shape, not a benchmark.",
+        "Projection price points are labelled by tier (hosted-llm-small, hosted-llm-large) and shown with their USD per million token rates. Model identifiers are withheld."
+      ],
+      "provenance": {
+        "artefact": "data/runs/eval-costs.json",
+        "sha256": "c4da0c3d719f1f7362fe843a9ee2e8328aad3ab33229da32b745a4579e1dedba",
+        "finished_at": "2026-08-09T20:16:28.106737+00:00",
+        "harness_version": "1",
+        "config": {
+          "limit": 5,
+          "llm_backend": "ollama",
+          "model": "llama3.1:8b",
+          "temperature": 0.0,
+          "max_output_tokens": 900
+        }
+      }
+    }
+  }
+}

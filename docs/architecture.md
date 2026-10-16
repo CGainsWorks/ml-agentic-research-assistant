@@ -264,7 +264,7 @@ evals/
   groundedness/    citation-support judging
   adversarial/     attacks.yaml + two-tier suite
   costs/           token and cost attribution
-  report.py        renders docs/results.md from the artefacts
+  report.py        condenses the artefacts into docs/results.json, renders docs/results.md
 infra/
   terraform/       scheduled ingestion on AWS (NOT APPLIED)
   lambda/          the handler that Terraform would invoke

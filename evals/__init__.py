@@ -10,6 +10,8 @@ Ordering is deliberate and matches the build order:
     evals/adversarial    do the guardrails hold under attack?      deterministic
     evals/costs          what does one query actually cost?        measured
 
-Everything writes an artefact to data/runs/; `python -m evals.report` renders
-docs/results.md from those artefacts.
+Everything writes an artefact to data/runs/ (gitignored).
+`python -m evals.report --from-runs` condenses them into the committed
+docs/results.json and renders docs/results.md from it; `--check` is the CI
+guard that the two agree.
 """

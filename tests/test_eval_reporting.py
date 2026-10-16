@@ -55,8 +55,8 @@ def test_report_shows_the_interval_and_sample_size():
     assert "95% CI" in cell
 
 
-def test_missing_metric_renders_as_a_dash():
-    assert _rate_cell(None) == "—"
+def test_missing_metric_renders_as_not_applicable():
+    assert _rate_cell(None) == "n/a"
 
 
 def test_cost_projection_rows_carry_the_tier_label_and_its_rates():
