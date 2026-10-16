@@ -99,7 +99,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:  # noqa: ARG
                 sys.executable,
                 "/app/scripts/fetch_corpus.py",
                 "--limit",
-                os.environ.get("ARAA_CORPUS_TARGET_DOCS", "200"),
+                str(settings.corpus_target_docs),
                 "--out",
                 str(settings.corpus_dir),
             ],

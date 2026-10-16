@@ -5,8 +5,9 @@
 # Brings up: a local Ollama, a one-shot bootstrap that fetches the CC-BY corpus
 # and builds the index, then the streaming API on http://localhost:8000.
 #
-# First run downloads a ~4.7GB model and ~60 papers, so it takes a while. Every
-# subsequent run is instant because both are on named volumes.
+# First run downloads a ~4.7GB model and the 12 papers the published results
+# were measured on (ARAA_CORPUS_TARGET_DOCS in .env changes that), so it takes a
+# while. Every subsequent run is instant because both are on named volumes.
 
 name: araa
 

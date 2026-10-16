@@ -69,9 +69,9 @@ variable "ephemeral_storage_mb" {
 }
 
 variable "corpus_target_docs" {
-  description = "Documents to fetch per scheduled run."
+  description = "Documents to fetch per scheduled run. Matches araa.config."
   type        = number
-  default     = 200
+  default     = 12
 }
 
 variable "log_retention_days" {

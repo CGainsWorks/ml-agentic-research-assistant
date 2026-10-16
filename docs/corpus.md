@@ -60,7 +60,7 @@ Nothing under `data/` is committed. `scripts/fetch_corpus.py` regenerates it.
 arXiv asks for at least 3 seconds between requests and returns `503` with a
 `Retry-After` header when it wants you to slow down. The fetcher honours both,
 sends a descriptive `User-Agent`, and defaults to a 3-second delay between PDF
-downloads. 200 papers therefore takes about ten minutes. Being rude here gets
+downloads. The default 12 papers take under a minute; 200 would take about ten. Being rude here gets
 the whole IP blocked, which would break the project for everyone who clones it.
 
 ## Model licences

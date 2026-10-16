@@ -114,7 +114,10 @@ class Settings(BaseSettings):
     # APScheduler cron for the re-embedding worker. Default: 03:15 daily.
     ingest_cron: str = "15 3 * * *"
     ingest_enabled: bool = False
-    corpus_target_docs: int = 200
+    # The 12 papers docs/results.md was measured on (scripts/fetch_corpus.py's
+    # default window). Raise it for a bigger corpus; the published numbers
+    # then no longer apply.
+    corpus_target_docs: int = 12
 
     # ---------- api ----------
     api_host: str = "0.0.0.0"

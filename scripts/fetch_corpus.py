@@ -26,8 +26,8 @@ Outputs, all under data/corpus/:
 Nothing here is committed to git; see .gitignore.
 
 Usage:
-    python scripts/fetch_corpus.py                 # 200 docs, default window
-    python scripts/fetch_corpus.py --limit 60      # smaller, for a quick start
+    python scripts/fetch_corpus.py                 # 12 docs, default window
+    python scripts/fetch_corpus.py --limit 200     # a bigger corpus
     python scripts/fetch_corpus.py --set cs --from 2024-01-01 --until 2024-03-01
 """
 
@@ -36,6 +36,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -48,6 +49,10 @@ from pathlib import Path
 
 OAI_ENDPOINT = "https://oaipmh.arxiv.org/oai"
 PDF_BASE = "https://arxiv.org/pdf"
+
+# Matches araa.config.Settings.corpus_target_docs (a test pins the two together):
+# the 12 papers docs/results.md was measured on.
+DEFAULT_LIMIT = 12
 NS = {"oai": "http://www.openarchives.org/OAI/2.0/", "ax": "http://arxiv.org/OAI/arXiv/"}
 
 USER_AGENT = (
@@ -293,7 +298,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--limit", type=int, default=200, help="target document count")
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=int(os.environ.get("ARAA_CORPUS_TARGET_DOCS") or DEFAULT_LIMIT),
+        help=f"target document count (default ARAA_CORPUS_TARGET_DOCS, else {DEFAULT_LIMIT})",
+    )
     ap.add_argument("--set", dest="oai_set", default="cs", help="arXiv OAI set (e.g. cs, stat)")
     ap.add_argument("--from", dest="date_from", default=str(default_until - timedelta(days=45)))
     ap.add_argument("--until", dest="date_until", default=str(default_until))

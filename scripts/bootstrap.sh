@@ -25,9 +25,13 @@ if [ -z "$OLLAMA_MODEL" ]; then
   echo "[bootstrap] could not determine the model from araa.config" >&2
   exit 1
 fi
-# Smaller than the 200-doc default so the first `docker compose up` finishes in
-# minutes rather than tens of minutes. `make corpus` fetches the full set.
-DOCS="${ARAA_BOOTSTRAP_DOCS:-60}"
+# Corpus size comes from the package too (ARAA_CORPUS_TARGET_DOCS overrides
+# it), so compose, `make corpus` and the published results agree on one number.
+DOCS=$(python -c 'from araa.config import get_settings; print(get_settings().corpus_target_docs)' 2>/dev/null) || DOCS=""
+if [ -z "$DOCS" ]; then
+  echo "[bootstrap] could not determine the corpus size from araa.config" >&2
+  exit 1
+fi
 
 log() { printf '\n\033[1m[bootstrap]\033[0m %s\n' "$*"; }
 
