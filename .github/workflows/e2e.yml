@@ -2,19 +2,19 @@ name: e2e
 
 # End-to-end integration test against the real compose stack.
 #
-# On demand only. It downloads a model and fetches a corpus from arXiv at that
-# service's rate limit, so a run costs tens of minutes of Actions quota. There
-# is no schedule: this repository changes occasionally, so a nightly run would
-# spend that quota every night to re-confirm something nobody changed.
+# On demand only: it builds the image and fetches a small corpus from arXiv at
+# that service's rate limit. Run it when you have touched the compose graph,
+# the Dockerfile, bootstrap.sh, the ingestion pipeline, or anything else a unit
+# test cannot see:
 #
-# Run it when you have touched the compose graph, the Dockerfile, bootstrap.sh,
-# the ingestion pipeline, or anything else a unit test cannot see:
+#     gh workflow run e2e.yml                          # mock generator, smoke
+#     gh workflow run e2e.yml -f full=true             # mock generator, full suite
+#     gh workflow run e2e.yml -f backend=ollama        # a real local model (slow)
 #
-#     gh workflow run e2e.yml
-#     gh workflow run e2e.yml -f full=true     # also assert citations/streaming
-#
-# Locally the same assertions are `make e2e-cold`, which is faster and free.
-# The per-change gate is ci.yml, which runs on push and PR and is cheap.
+# The default generator is scripts/mock_openai_server.py behind the
+# openai_compat backend (docker-compose.mock-llm.yml): no model download, no
+# GPU, no key, no paid API. `backend=ollama` runs llama3.2:1b in the bundled
+# Ollama container instead. Locally the same assertions are `make e2e-cold`.
 on:
   workflow_dispatch:
     inputs:
@@ -22,6 +22,11 @@ on:
         description: "Run the full suite (asserts citations and streaming) instead of --smoke"
         type: boolean
         default: false
+      backend:
+        description: "Generator: mock (OpenAI-compatible mock server) or ollama (llama3.2:1b on CPU)"
+        type: choice
+        options: [mock, ollama]
+        default: mock
 
 concurrency:
   group: e2e
@@ -30,34 +35,42 @@ concurrency:
 jobs:
   compose:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
 
     env:
-      # A GitHub-hosted runner has ~14 GB of disk and no GPU. llama3.1:8b is
-      # 4.9 GB and would run on CPU at roughly a token a second, which is not a
-      # sane CI budget. llama3.2:1b exercises the identical code path.
-      ARAA_OLLAMA_MODEL: llama3.2:1b
-      # arXiv asks for >=3s between requests, so the corpus size is the dominant
-      # cost of this job. Six documents is enough to prove ingestion, licence
-      # filtering, chunking and retrieval all work on real PDFs.
-      ARAA_BOOTSTRAP_DOCS: "6"
       ANONYMIZED_TELEMETRY: "False"
+      COMPOSE_FILE: ${{ inputs.backend == 'ollama' && 'docker-compose.yml' || 'docker-compose.yml:docker-compose.mock-llm.yml' }}
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Free up runner disk
         # The default runner image ships ~30 GB of toolchains this job will
-        # never use, and the image plus model plus corpus does not fit without
+        # never use, and the image plus corpus does not fit comfortably without
         # reclaiming some of it.
         run: |
           df -h /
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc || true
           df -h /
 
+      # Compose passes .env into the containers (env_file in docker-compose.yml).
+      # Variables exported in the runner shell are NOT seen by the containers.
+      # arXiv asks for >=3s between requests, so the corpus size is the dominant
+      # fetch cost; six documents prove ingestion, licence filtering, chunking
+      # and retrieval on real PDFs.
+      - name: Configure the stack
+        run: |
+          echo "ARAA_CORPUS_TARGET_DOCS=6" > .env
+          if [ "${{ inputs.backend }}" = "ollama" ]; then
+            # An 8B model on a CPU runner is about a token a second. The 1B
+            # model exercises the identical code path.
+            echo "ARAA_OLLAMA_MODEL=llama3.2:1b" >> .env
+          fi
+          cat .env
+
       - name: Bring up the stack and run the integration test
         run: |
-          if [ "${{ github.event.inputs.full }}" = "true" ]; then
+          if [ "${{ inputs.full }}" = "true" ]; then
             ./scripts/e2e_test.sh --up --fresh --keep
           else
             ./scripts/e2e_test.sh --up --fresh --keep --smoke
@@ -68,6 +81,7 @@ jobs:
         run: |
           echo "=== bootstrap ==="; docker compose logs bootstrap --tail 100 || true
           echo "=== api ===";       docker compose logs api --tail 100 || true
+          echo "=== mock-llm ===";  docker compose logs mock-llm --tail 50 || true
           echo "=== ollama ===";    docker compose logs ollama --tail 50 || true
 
       - name: Tear down

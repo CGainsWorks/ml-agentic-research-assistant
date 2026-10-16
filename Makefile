@@ -68,8 +68,12 @@ eval-cost: ## Token and USD cost per query, attributed by graph node
 	$(PY) -m evals.costs.run_cost_report
 
 .PHONY: report
-report: ## Regenerate docs/results.md from the latest eval artefacts
-	$(PY) -m evals.report
+report: ## Rebuild docs/results.json from data/runs/ and render docs/results.md
+	$(PY) -m evals.report --from-runs
+
+.PHONY: report-check
+report-check: ## Fail if docs/results.md does not match docs/results.json (CI runs this)
+	$(PY) -m evals.report --check
 
 # --------------------------------------------------------------------- CI
 .PHONY: test
@@ -81,8 +85,12 @@ e2e: ## End-to-end integration test against a running stack
 	./scripts/e2e_test.sh
 
 .PHONY: e2e-cold
-e2e-cold: ## Destroy volumes, docker compose up, then assert the whole stack (~20 min)
+e2e-cold: ## Destroy volumes, docker compose up, then assert the whole stack (real model)
 	./scripts/e2e_test.sh --up --fresh
+
+.PHONY: e2e-mock
+e2e-mock: ## As e2e-cold, with the mock OpenAI-compatible server as the generator
+	COMPOSE_PATH_SEPARATOR=: COMPOSE_FILE=docker-compose.yml:docker-compose.mock-llm.yml ./scripts/e2e_test.sh --up --fresh
 
 .PHONY: lint
 lint: ## Lint + format check

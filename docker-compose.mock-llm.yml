@@ -1,0 +1,40 @@
+# Override: generation from a mock OpenAI-compatible server instead of a model.
+#
+#     COMPOSE_FILE=docker-compose.yml:docker-compose.mock-llm.yml docker compose up
+#
+# Used by the e2e workflow. The whole stack is real (corpus fetch, ingestion,
+# embeddings, reranker, guardrails, the API and SSE) except the generator,
+# which is scripts/mock_openai_server.py answering over the OpenAI chat
+# completions protocol. No model is pulled, no GPU is needed and nothing is
+# paid for. Answers are canned, so this proves the plumbing, not answer
+# quality. The bundled Ollama still starts, empty, because the base file wires
+# it into depends_on; nothing calls it.
+
+services:
+  mock-llm:
+    build: .
+    command: ["python", "/app/scripts/mock_openai_server.py", "--host", "0.0.0.0", "--port", "8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/v1/models >/dev/null || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: "no"
+
+  bootstrap:
+    environment:
+      ARAA_LLM_BACKEND: openai_compat
+      ARAA_OPENAI_BASE_URL: http://mock-llm:8080/v1
+      ARAA_OPENAI_MODEL: mock-llm
+    depends_on:
+      mock-llm:
+        condition: service_healthy
+
+  api:
+    environment:
+      ARAA_LLM_BACKEND: openai_compat
+      ARAA_OPENAI_BASE_URL: http://mock-llm:8080/v1
+      ARAA_OPENAI_MODEL: mock-llm
+    depends_on:
+      mock-llm:
+        condition: service_healthy
